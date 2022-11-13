@@ -51,10 +51,12 @@ ROS2_PKGS_WS=$2
 check_dir_valid $ROS2_PKGS_WS "ROS2_PKGS_WS"
 PKGS=$3
 
-clean_ros2_ws() {
-    rm -rf $1/build $1/install $1/log
-}
-clean_ros2_ws $ROS2_PKGS_WS
+# cleanup
+for d in $3 ; 
+do
+    rm -r  $2/build/$d
+    rm -r  $2/install/$d
+done
 
 export LANG=en_US.UTF-8
 
