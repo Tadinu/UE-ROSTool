@@ -56,6 +56,15 @@ def install_ros2(
     projectPathBinaries =  os.path.join(projectPath, 'Binaries' )
 
     if remove:
+        if os.path.exists(ros):
+            print('Cleanup workspace')
+            shutil.rmtree(ros)
+
+
+
+    os.system('bash ' + buildRosScript + ' ' + ros + ' ' + rosdistro + ' ' +  ' "' + ' '.join(pkgs) + '"')
+
+    if remove:
         if os.path.exists(pluginPathRosInclude):
             shutil.rmtree(pluginPathRosInclude)
         if os.path.exists(pluginPathRosLib):
