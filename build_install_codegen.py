@@ -211,7 +211,11 @@ if __name__ == '__main__':
         help='Skip pulluing src',
         action='store_true'
     )
-
+    parser.add_argument(
+        '--rosdistro', 
+        choices=['foxy', 'humble'],
+        default='humble'
+    )
     args = parser.parse_args()
 
     config_files = ['default_config.yaml']
