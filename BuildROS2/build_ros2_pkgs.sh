@@ -45,17 +45,16 @@ check_dir_valid() {
     fi
 }
 
-UE_PATH=$1
-check_dir_valid $UE_PATH "UE_PATH"
+ROS2_WS=$1
+PKGS=$2
 ROS2_PKGS_WS=$2
 check_dir_valid $ROS2_PKGS_WS "ROS2_PKGS_WS"
-PKGS=$3
 
 # cleanup
-for d in $3 ; 
+for d in $2 ; 
 do
-    rm -r  $2/build/$d
-    rm -r  $2/install/$d
+    rm -r  $1/build/$d
+    rm -r  $1/install/$d
 done
 
 export LANG=en_US.UTF-8
@@ -64,28 +63,26 @@ export LANG=en_US.UTF-8
 # export ROS_DOMAIN_ID=10
 # pay attention it can be 'rmw_fastrtps_dynamic_cpp' too
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-# Building ros by exact UE clang toolchain
-export UE_SYS_ROOT_PATH=$UE_PATH"/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v19_clang-11.0.1-centos7/x86_64-unknown-linux-gnu"
-export CC=$UE_SYS_ROOT_PATH"/bin/clang"
-export CXX=$UE_SYS_ROOT_PATH"/bin/clang++"
+
+# use locally installed clang-13
+export CC="/usr/bin/clang-13"
+export CXX="/usr/bin/clang++-13"
+
 
 # -latomic issue - see more here https://github.com/ros2/ros2/issues/418
 export LINKER_FLAGS="-latomic "\
 "-Wl,-rpath=\${ORIGIN} "\
-"-Wl,-rpath-link="$UE_SYS_ROOT_PATH" "\
-"-Wl,-rpath-link="$UE_SYS_ROOT_PATH"/usr/lib "\
-"-Wl,-rpath-link="$UE_SYS_ROOT_PATH"/usr/lib64 "\
 "-Wl,-rpath-link=/usr/lib/x86_64-linux-gnu "\
 "-Wl,-rpath-link=/usr/lib "
 
-CMAKE_ARGS="-DCMAKE_SHARED_LINKER_FLAGS=${LINKER_FLAGS} -DCMAKE_EXE_LINKER_FLAGS=${LINKER_FLAGS} -DBUILD_TESTING=OFF --no-warn-unused-cli"
-
-# Build ROS2_PKGS_WS
-cd $ROS2_PKGS_WS
-if [[ -z "$PKGS" ]]; then
-    echo "Build all pkgs in ${ROS2_PKGS_WS}"
-    colcon build --cmake-args ${CMAKE_ARGS}
-else
-    echo "Build pkgs ${PKGS}"
+pushd $ROS2_WS
+    colcon build \
+        --packages-skip-build-finished \
+        --packages-up-to $PKGS \
+        --cmake-args \
+            "-DCMAKE_SHARED_LINKER_FLAGS='$MY_LINKER_FLAGS'" \
+            "-DCMAKE_EXE_LINKER_FLAGS='$MY_LINKER_FLAGS'" \
+            -DBUILD_TESTING=OFF --no-warn-unused-cli
+popd
     colcon build --packages-select $PKGS --cmake-args ${CMAKE_ARGS}
 fi
