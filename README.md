@@ -138,6 +138,3 @@ Python script to generate UE4 .h and .cpp files for UnrealEngine to interface wi
 - the script iterates multiple times over the files - this can be avoided if performance is a real issue (messages shouldn't change often however, so clarity should be prioritized over performance
 - add automated testing: minimum should be to include all of the generated files and try to compile
 - Use TStaticArray instead of TArray for fixed size array.
-
-### Maintainer
-yu.okamoto@rapyuta-robotics.com
