@@ -7,7 +7,7 @@ cleanup() {
     sudo rm -r -f $1/build_renamed $1/install_renamed
 }
 
-cleanup $ROS2_WS
+#cleanup $ROS2_WS
 
 export LANG=en_US.UTF-8
 
@@ -20,13 +20,13 @@ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # UE4
 # export MY_SYS_ROOT_PATH=$UE_PATH"/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v19_clang-11.0.1-centos7/x86_64-unknown-linux-gnu"
 # UE5
-# export MY_SYS_ROOT_PATH=$UE_PATH"/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v20_clang-13.0.1-centos7/x86_64-unknown-linux-gnu"
+# export MY_SYS_ROOT_PATH=$UE_PATH"/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v20_clang-15.0.1-centos7/x86_64-unknown-linux-gnu"
 # export CC=$MY_SYS_ROOT_PATH"/bin/clang"
 # export CXX=$MY_SYS_ROOT_PATH"/bin/clang++"
 
-# use locally installed clang-13
-export CC="/usr/bin/clang-13"
-export CXX="/usr/bin/clang++-13"
+# use locally installed clang-15 (Ubuntu 22)
+export CC=/usr/bin/clang-15
+export CXX=/usr/bin/clang++-15
 
 # -latomic issue - see more here https://github.com/ros2/ros2/issues/418
 export MY_LINKER_FLAGS="-latomic "\
@@ -41,18 +41,18 @@ export MY_LINKER_FLAGS="-latomic "\
 # "-Wl,-rpath-link="$MY_SYS_ROOT_PATH"/lib "\
 # "-Wl,-rpath-link="$MY_SYS_ROOT_PATH"/lib64 "\
 
-
 pushd $ROS2_WS
 colcon build \
     --cmake-clean-cache \
     --cmake-force-configure \
     --continue-on-error \
+    --symlink-install \
     --cmake-args \
         "-DCMAKE_SHARED_LINKER_FLAGS='$MY_LINKER_FLAGS'"\
         "-DCMAKE_EXE_LINKER_FLAGS='$MY_LINKER_FLAGS'"\
         "-DCMAKE_CXX_FLAGS='-stdlib=libstdc++'"\
         "-DCMAKE_CXX_FLAGS='-fpermissive'"\
         -DBUILD_TESTING=OFF \
-    --no-warn-unused-cli \
-   --packages-up-to rclc rcl_action
+    --no-warn-unused-cli
+    #--packages-up-to rclc rcl_action
 popd

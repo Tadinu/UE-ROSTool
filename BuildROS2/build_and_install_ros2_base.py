@@ -1,21 +1,53 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 
 from build_and_install_ros2 import build_ros2, install_ros2
 
-DEFAULT_ALLOWED_SPACES = [ 
-    'fastcdr', 
-    'fastrtps', 
-    'rcl', 
-    'rcutils', 
-    'rcpputils', 
-    'rmw', 
-    'rosidl', 
-    'tracetools', 
-    'ament'
+DEFAULT_ALLOWED_PKGS = [ 
+    'fastcdr',
+    'fastrtps',
+    'rcl',
+    'rcutils',
+    'rcpputils',
+    'rmw',
+    'rosidl',
+    'tracetools',
+    'ament',
+    #'tinyxml2',
+    #msgs
+    'ue_msgs',
+    'action_msgs',
+    'unique_identifier_msgs',
+    'builtin_interfaces',
+    'example_interfaces',
+    'actionlib_msgs',
+    'composition_interfaces',
+    'diagnostic_msgs',
+    'lifecycle_msgs',
+    'logging_demo',
+    'map_msgs',
+    'move_base_msgs',
+    'pendulum_msgs',
+    'shape_msgs',
+    'statistics_msgs',
+    'std_srvs',
+    'stereo_msgs',
+    'test_msgs',
+    'trajectory_msgs',
+    'visualization_msgs',
+    'geometry_msgs',
+    'nav_msgs',
+    'nav2_msgs',
+    'sensor_msgs',
+    'std_msgs',
+    'tf2_msgs',
+    'tf2_sensor_msgs',
+    'rosgraph_msgs',
+    'pcl_msgs'
     ]
-DEFAULT_NOT_ALLOWED_SPACES = [ 
+DEFAULT_NOT_ALLOWED_PKGS = [ 
     '.so.', 
     'python', 
     'rclcpp', 
@@ -32,39 +64,12 @@ DEFAULT_NOT_ALLOWED_SPACES = [
     'rosidl_cmake', 
     'rosidl_default', 
     'rosidl_generator_cpp', 
-    # 'rosidl_generator_py', 
+    'rosidl_generator_py', 
     'rosidl_generator_dds_idl', 
-    # 'rosidl_generator_py', 
+    'rosidl_generator_py', 
     'rosidl_runtime_cpp', 
     'rosidl_runtime_py', 
-    #msgs
-    'action_msgs', 
-    'unique_identifier_msgs' ,
-    'builtin_interfaces', 
-    'example_interfaces', 
-    'actionlib_msgs', 
-    'composition_interfaces', 
-    'diagnostic_msgs', 
-    'lifecycle_msgs', 
-    'logging_demo', 
-    'map_msgs', 
-    'move_base_msgs', 
-    'pendulum_msgs', 
-    'shape_msgs', 
-    'statistics_msgs', 
-    'std_srvs', 
-    'stereo_msgs', 
-    'test_msgs', 
-    'trajectory_msgs', 
-    'visualization_msgs', 
-    'geometry_msgs', 
-    'nav_msgs', 
-    'sensor_msgs', 
-    'std_msgs', 
-    'tf2_msgs', 
-    'sensor_msgs_py', 
-    'tf2_sensor_msgs', 
-    'rosgraph_msgs', 
+    # msgs
     'tracetools_', 
     'Codec_', 
     'Plugin_', 
@@ -75,6 +80,11 @@ DEFAULT_NOT_ALLOWED_SPACES = [
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Build ros2 from source with necessasary patches to be used with UnrealEngine. And copy lib and header files under Unreal Project folder."
+    )
+    parser.add_argument(
+        "--ros2_distro",
+        help="ROS2 distro",
+        default='humble'
     )
     parser.add_argument(
         "--ue_path",
@@ -107,19 +117,20 @@ if __name__ == '__main__':
     if ue_plugin_folder_name == '':
         ue_plugin_folder_name = args.ue_plugin_name
 
-    build_ros2(
-        buildType = 'base',
-        allowed_spaces = DEFAULT_ALLOWED_SPACES,
-        pkgs = ['ue_msgs'],
-        ros_ws = os.path.join(os.getcwd(), '../ros2_ws')
-    )
+    #build_ros2(
+    #    buildType = 'base',
+    #    allowed_pkgs = DEFAULT_ALLOWED_PKGS,
+    #    pkgs = ['ue_msgs'],
+    #    ros_ws = os.path.join(os.getcwd(), f'ros2_ws_{args.ros2_distro}')
+    #)
     install_ros2(
         projectPath = args.ue_proj_path,
         pluginName = args.ue_plugin_name,
         pluginFolderName = ue_plugin_folder_name,
         targetThirdpartyFolderName = args.ue_target_3rd_name,
         buildType = 'base',
-        ros_ws = os.path.join(os.getcwd(), '../ros2_ws'),
-        allowed_spaces = DEFAULT_ALLOWED_SPACES,
-        not_allowed_spaces = DEFAULT_NOT_ALLOWED_SPACES,
+        ros_ws = os.path.join(os.getcwd(), f'ros2_ws_{args.ros2_distro}'),
+        allowed_pkgs = DEFAULT_ALLOWED_PKGS,
+        not_allowed_pkgs = DEFAULT_NOT_ALLOWED_PKGS,
+        rosdistro = args.ros2_distro
     )
