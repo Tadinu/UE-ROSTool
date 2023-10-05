@@ -968,7 +968,7 @@ def get_types_cpp(target_paths, pkgs_name_mapping, name_mapping):
 # main process
 ############################################
 
-def codegen(module, dependency, target, name_mapping, ros_ws = os.path.join(os.getcwd(), '../ros2_ws'),):
+def codegen(module, dependency, target, name_mapping, ros_ws = os.path.join(os.getcwd(), '../BuildROS2/ros2_ws_humble'),):
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
     current_dir = os.getcwd()

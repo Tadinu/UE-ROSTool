@@ -75,21 +75,24 @@ def RenameDir(dir, suffix):
     
     return dir + suffix
 
-def GrabLibs(folderFrom, folderTo, allowed_spaces):
+def GrabLibs(folderFrom, folderTo, allowed_pkgs):
     filesCount = 0
 
-    for dirpath,subdirs,files in os.walk(folderFrom):
+    for dirpath,subdirs,files in os.walk(folderFrom, followlinks=True):
+        if 'tinyxml2' in dirpath:
+            print(dirpath)
         for file in files:
            if file.startswith('lib') and (file.endswith('.so') or '.so.' in file) and \
-                any(elem in file for elem in allowed_spaces):
+                any(elem in file for elem in allowed_pkgs):
                 filesCount += 1
                 fileFrom = os.path.join(dirpath, file)
                 fileTo = folderTo + '/' + file
                 shutil.copy(fileFrom, fileTo)
+                #print(f'copy lib: {fileFrom} -> {fileTo}')
 
     print('Grabbed libs (from ' + folderFrom + ' to ' + folderTo + '): ' + str(filesCount))
 
-def GrabIncludes(folderFrom, folderTo, allowed_spaces):
+def GrabIncludes(folderFrom, folderTo, allowed_pkgs):
     foldersCount = 0
 
     for elemName in os.listdir(folderFrom):
@@ -97,7 +100,7 @@ def GrabIncludes(folderFrom, folderTo, allowed_spaces):
         includeFolder = os.path.join(dirPath, 'include')
         
         if os.path.isdir(dirPath) and os.path.isdir(includeFolder) and \
-            any(elem in elemName for elem in allowed_spaces):
+            any(elem in elemName for elem in allowed_pkgs):
             for subincludeElem in os.listdir(includeFolder):
                 subincludePath = os.path.join(includeFolder, subincludeElem)
 
@@ -105,26 +108,27 @@ def GrabIncludes(folderFrom, folderTo, allowed_spaces):
                     folderToFull = os.path.join(folderTo, subincludeElem)
                     shutil.copytree(subincludePath, folderToFull, dirs_exist_ok=True)
                     foldersCount += 1
+                    #print(f'copy header: {subincludePath} -> {folderToFull}')
 
     print('Grabbed include folders (from ' + folderFrom + ' to ' + folderTo + '): ' + str(foldersCount))
 
-def CleanLibs(dir, not_allowed_spaces):
+def CleanLibs(dir, not_allowed_pkgs):
     removedCount = 0
-    for dirpath,subdirs,files in os.walk(dir):
+    for dirpath,subdirs,files in os.walk(dir, followlinks=True):
         for file in files:
-            if any(elem in file for elem in not_allowed_spaces):
+            if any(elem in file for elem in not_allowed_pkgs):
                 fileName = os.path.join(dirpath, file)
                 removedCount += 1
                 os.remove(fileName)
 
     print('Libs files cleaned:', removedCount)
 
-def CleanIncludes(dir, not_allowed_spaces):
+def CleanIncludes(dir, not_allowed_pkgs):
     removedCount = 0
     for elemName in os.listdir(dir):
         dirPath = os.path.join(dir, elemName)
         
-        if os.path.isdir(dirPath) and any(elem in elemName for elem in not_allowed_spaces):
+        if os.path.isdir(dirPath) and any(elem in elemName for elem in not_allowed_pkgs):
             shutil.rmtree(dirPath)
             removedCount += 1
 
@@ -181,7 +185,7 @@ def RemovePyDependency(pluginPath, projectPath):
 # but it's not a proper fix, since we provide plugin for end users, and can't change their UE4.27
 # So solution can be run renaming for all of this libraries 'SONAME' and links to this libraries inside all others
 def RenameLibsWithVersion(pluginPath, projectPath):
-    print('Looking for libs with version...')
+    print(f'Looking for libs with version... in {projectPath}')
     versionMarker = '.so.'
     libsReplacements = dict()
     # map {libname:dir}
@@ -231,6 +235,6 @@ def CheckLibs(folderName):
 
     print('Error. Duplications were found') if len(libs) != len(libsSet) else print('All ok. Duplications are not found')
 
-def LocalizeLibSymbols(libsFolderPath):
-    RenameLibsWithVersion(libsFolderPath)
+def LocalizeLibSymbols(projectPath, libsFolderPath):
+    RenameLibsWithVersion(libsFolderPath, projectPath)
     SetRPATH(libsFolderPath)

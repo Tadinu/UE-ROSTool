@@ -171,7 +171,7 @@ sudo apt install patchelf -y
 # iceoryx_hoofs dependency
 sudo apt-get install libacl1-dev -y
 
-# clang-13
-sudo su -c "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-proposed universe' >> /etc/apt/sources.list"
+# clang-15 (Ubuntu 22)
+#sudo su -c "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-proposed universe' >> /etc/apt/sources.list"
 sudo apt update
-sudo apt install clang-13 -y
+sudo apt install clang-15 -y

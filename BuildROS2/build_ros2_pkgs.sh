@@ -64,9 +64,9 @@ export LANG=en_US.UTF-8
 # pay attention it can be 'rmw_fastrtps_dynamic_cpp' too
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
-# use locally installed clang-13
-export CC="/usr/bin/clang-13"
-export CXX="/usr/bin/clang++-13"
+# use locally installed clang-15 (Ubuntu 22)
+export CC="/usr/bin/clang-15"
+export CXX="/usr/bin/clang++-15"
 
 
 # -latomic issue - see more here https://github.com/ros2/ros2/issues/418

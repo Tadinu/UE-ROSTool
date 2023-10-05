@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 
 from build_and_install_ros2 import build_ros2, install_ros2
@@ -30,6 +31,11 @@ DEFAULT_PKGS = [
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Build ros2 from source with necessasary patches to be used with UnrealEngine. And copy lib and header files under Unreal Project folder."
+    )
+    parser.add_argument(
+        "--ros2_distro",
+        help="ROS2 distro",
+        default='humble'
     )
     parser.add_argument(
         "--ue_path",
@@ -68,19 +74,20 @@ if __name__ == '__main__':
     if ue_plugin_folder_name == '':
         ue_plugin_folder_name = args.ue_plugin_name
 
-    build_ros2(
-        buildType = 'pkgs',
-        allowed_spaces = args.ros_pkgs,
-        pkgs = args.ros_pkgs
-        ros_ws = os.path.join(os.getcwd(), '../ros2_ws')
-    )
+    #build_ros2(
+    #    buildType = 'pkgs',
+    #    allowed_pkgs = args.ros_pkgs,
+    #    pkgs = args.ros_pkgs
+    #    ros_ws = os.path.join(os.getcwd(), f'ros2_ws_{args.ros2_distro}')
+    #)
     install_ros2(
         projectPath = args.ue_proj_path,
         pluginName = args.ue_plugin_name,
         pluginFolderName = ue_plugin_folder_name,
         targetThirdpartyFolderName = args.ue_target_3rd_name,
         buildType = 'pkgs',
-        ros_ws = os.path.join(os.getcwd(), '../ros2_ws'),
-        allowed_spaces = args.ros_pkgs,
-        not_allowed_spaces = [],
+        ros_ws = os.path.join(os.getcwd(), f'ros2_ws_{args.ros2_distro}'),
+        allowed_pkgs = args.ros_pkgs,
+        not_allowed_pkgs = [],
+        rosdistro = args.ros2_distro
     )

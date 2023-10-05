@@ -231,15 +231,15 @@ if __name__ == '__main__':
         with managed_chdir('BuildROS2'):
             sys.path.append(os.getcwd())
             from BuildROS2.build_and_install_ros2 import build_ros2, install_ros2
-            from BuildROS2.build_and_install_ros2_base import DEFAULT_NOT_ALLOWED_SPACES, DEFAULT_ALLOWED_SPACES
+            from BuildROS2.build_and_install_ros2_base import DEFAULT_NOT_ALLOWED_PKGS, DEFAULT_ALLOWED_PKGS
             ws_remove = args.remove
             if args.type == 'base':
-                allowed_spaces = DEFAULT_ALLOWED_SPACES
-                not_allowed_spaces = DEFAULT_NOT_ALLOWED_SPACES
+                allowed_pkgs = DEFAULT_ALLOWED_PKGS
+                not_allowed_pkgs = DEFAULT_NOT_ALLOWED_PKGS
                 pkgs = []
             elif args.type == 'pkgs':
-                allowed_spaces = list(target.keys())
-                not_allowed_spaces = [
+                allowed_pkgs = list(target.keys())
+                not_allowed_pkgs = [
                     'python', 
                     'rosidl_generator_py'
                 ]
@@ -249,7 +249,7 @@ if __name__ == '__main__':
             if args.build:    
                 build_ros2(
                     buildType = args.type,
-                    allowed_spaces = allowed_spaces,
+                    allowed_pkgs = allowed_pkgs,
                     pkgs = pkgs,
                     ros_ws = args.ros_ws,
                     remove = ws_remove,
@@ -263,8 +263,8 @@ if __name__ == '__main__':
                     targetThirdpartyFolderName = targetThirdpartyFolderName,
                     buildType = args.type,
                     ros_ws = args.ros_ws,
-                    allowed_spaces = allowed_spaces,
-                    not_allowed_spaces = not_allowed_spaces,
+                    allowed_pkgs = allowed_pkgs,
+                    not_allowed_pkgs = not_allowed_pkgs,
                     remove = args.remove,
                     rosdistro = args.rosdistro
                 )
